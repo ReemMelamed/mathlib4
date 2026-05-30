@@ -5,7 +5,7 @@ Authors: Re'em Melamed-Katz
 -/
 module
 
-import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Green's Relations Definitions
@@ -28,6 +28,8 @@ on a general semigroup.
 
 * [T. Colcombet, *The Factorization Forest Theorem*][colcombet2008]
 -/
+
+public section
 
 variable {S : Type*} [Semigroup S]
 
