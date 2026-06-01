@@ -104,7 +104,7 @@ namespace IsGreenJRel
     (hbc : IsGreenJRel b c) : IsGreenJRel a c := by
   rcases hab, hbc with
     ⟨(h | ⟨_, h⟩ | ⟨_, h⟩ | ⟨_, _, h⟩), (h' | ⟨_, h'⟩ | ⟨_, h'⟩ | ⟨_, _, h'⟩)⟩ <;>
-  (simp [← mul_assoc, h' ▸ h] ; grind [mul_assoc, IsGreenJRel])
+  (simp [← mul_assoc, h' ▸ h]; grind [mul_assoc, IsGreenJRel])
 
 end IsGreenJRel
 
