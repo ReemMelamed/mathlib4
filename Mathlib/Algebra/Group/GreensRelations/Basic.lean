@@ -121,7 +121,7 @@ namespace IsGreenL
   ⟨IsGreenLeftDvd.trans hab.left hbc.left, IsGreenLeftDvd.trans hbc.right hab.right⟩
 
 /-- Green's L relation defines a setoid on `S`. -/
-protected def setoid (S : Type*) [Semigroup S] : Setoid S where
+protected abbrev setoid (S : Type*) [Semigroup S] : Setoid S where
   r := IsGreenL
   iseqv := { refl := refl, symm := symm, trans := trans }
 
@@ -155,7 +155,7 @@ namespace IsGreenR
   ⟨IsGreenRightDvd.trans hab.left hbc.left, IsGreenRightDvd.trans hbc.right hab.right⟩
 
 /-- Green's R relation defines a setoid on `S`. -/
-protected def setoid (S : Type*) [Semigroup S] : Setoid S where
+protected abbrev setoid (S : Type*) [Semigroup S] : Setoid S where
   r := IsGreenR
   iseqv := { refl := refl, symm := symm, trans := trans }
 
@@ -186,7 +186,7 @@ namespace IsGreenH
   ⟨hab.left.trans hbc.left, hab.right.trans hbc.right⟩
 
 /-- Green's H relation defines a setoid on `S`. -/
-protected def setoid (S : Type*) [Semigroup S] : Setoid S where
+protected abbrev setoid (S : Type*) [Semigroup S] : Setoid S where
   r := IsGreenH
   iseqv := { refl := refl, symm := symm, trans := trans }
 
@@ -233,7 +233,7 @@ namespace IsGreenD
   ⟨z, hL1.trans hL3.symm, hR3.symm.trans hR2⟩
 
 /-- Green's D relation defines a setoid on `S`. -/
-protected def setoid (S : Type*) [Semigroup S] : Setoid S where
+protected abbrev setoid (S : Type*) [Semigroup S] : Setoid S where
   r := IsGreenD
   iseqv := { refl := refl, symm := symm, trans := trans }
 
@@ -267,7 +267,7 @@ namespace IsGreenJ
   ⟨hab.left.trans hbc.left, hbc.right.trans hab.right⟩
 
 /-- Green's J relation defines a setoid on `S`. -/
-protected def setoid (S : Type*) [Semigroup S] : Setoid S where
+protected abbrev setoid (S : Type*) [Semigroup S] : Setoid S where
   r := IsGreenJ
   iseqv := { refl := refl, symm := symm, trans := trans }
 
