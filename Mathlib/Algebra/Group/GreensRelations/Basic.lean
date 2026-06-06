@@ -40,9 +40,9 @@ lemma isGreenRightDvd_iff_isGreenLeftDvd_op {a b : S} :
 
 /-- Left and right divisibility are dual under the opposite semigroup. -/
 lemma isGreenLeftDvd_iff_isGreenRightDvd_op {a b : S} :
-    IsGreenRightDvd a b ↔ IsGreenLeftDvd (op a) (op b) := 
-  ⟨by tauto, fun hab ↦ match hab with 
-    | .inl h => .inl (op_injective h) | .inr ⟨z, h⟩ => .inr ⟨unop z, op_injective h⟩⟩ 
+    IsGreenRightDvd a b ↔ IsGreenLeftDvd (op a) (op b) :=
+  ⟨by tauto, fun hab ↦ match hab with
+    | .inl h => .inl (op_injective h) | .inr ⟨z, h⟩ => .inr ⟨unop z, op_injective h⟩⟩
 
 /-- Green's L and R relations are dual under the opposite semigroup. -/
 lemma isGreenR_iff_isGreenL_op {a b : S} :
