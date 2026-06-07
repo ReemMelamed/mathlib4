@@ -29,14 +29,9 @@ open MulOpposite
 
 /-- Left and right divisibility are dual under the opposite semigroup. -/
 lemma isGreenRightDvd_iff_isGreenLeftDvd_op {a b : S} :
-    IsGreenRightDvd a b ↔ IsGreenLeftDvd (op a) (op b) := by
-  constructor
-  · rintro (rfl | ⟨z, rfl⟩)
-    · exact Or.inl rfl
-    · exact Or.inr ⟨op z, rfl⟩
-  · rintro (h | ⟨z, h⟩)
-    · exact Or.inl (op_injective h)
-    · exact Or.inr ⟨unop z, op_injective h⟩
+  IsGreenRightDvd a b ↔ IsGreenLeftDvd (op a) (op b) :=
+  ⟨by tauto, fun hab ↦ match hab with
+    | .inl h => .inl (op_injective h) | .inr ⟨z, h⟩ => .inr ⟨unop z, op_injective h⟩⟩
 
 /-- Left and right divisibility are dual under the opposite semigroup. -/
 lemma isGreenLeftDvd_iff_isGreenRightDvd_op {a b : S} :
@@ -65,13 +60,10 @@ namespace IsGreenLeftDvd
 @[refl] theorem refl (a : S) : IsGreenLeftDvd a a := Or.inl rfl
 
 /-- Left divisibility is transitive. -/
-@[trans] theorem trans {a b c : S} (hab : IsGreenLeftDvd a b)
-    (hbc : IsGreenLeftDvd b c) : IsGreenLeftDvd a c := by
-  rcases hab with rfl | ⟨x, hx⟩
-  · exact hbc
-  · rcases hbc with rfl | ⟨y, hy⟩
-    · exact Or.inr ⟨x, hx⟩
-    · exact Or.inr ⟨x * y, by rw [hx, hy, mul_assoc]⟩
+@[trans] theorem trans {a b c : S} : IsGreenLeftDvd a b → IsGreenLeftDvd b c → IsGreenLeftDvd a c
+  | .inl rfl, hbc => hbc
+  | hab, .inl rfl => hab
+  | .inr ⟨x, hx⟩, .inr ⟨y, hy⟩ => .inr ⟨x * y, by rw [hx, hy, mul_assoc]⟩
 
 end IsGreenLeftDvd
 
@@ -190,19 +182,14 @@ end IsGreenH
 
 /-- Green's L and R relations commute: `L ∘ R = R ∘ L`. -/
 lemma isGreenL_commutes_isGreenR {a b z : S} (hL : IsGreenL a z) (hR : IsGreenR z b) :
-    ∃ z', IsGreenR a z' ∧ IsGreenL z' b := by
-  rcases hL.left with rfl | ⟨u, hu⟩
-  · exact ⟨b, hR, IsGreenL.refl b⟩
-  rcases hL.right with rfl | ⟨v, hv⟩
-  · exact ⟨b, hR, IsGreenL.refl b⟩
-  rcases hR.left with rfl | ⟨x, hx⟩
-  · exact ⟨a, IsGreenR.refl a, hL⟩
-  rcases hR.right with rfl | ⟨y, hy⟩
-  · exact ⟨a, IsGreenR.refl a, hL⟩
-  exact ⟨a * y,
-    ⟨Or.inr ⟨x, by simp [hu, ← hy, ← hx, mul_assoc]⟩, Or.inr ⟨y, rfl⟩⟩,
-    ⟨Or.inr ⟨u, by simp [hu, ← hy, mul_assoc]⟩, Or.inr ⟨v, by
-      simp [← hv, hy, ← mul_assoc]⟩⟩⟩
+    ∃ z', IsGreenR a z' ∧ IsGreenL z' b :=
+  match hL, hR with
+  | ⟨.inl rfl, _⟩, hR' | ⟨_, .inl rfl⟩, hR' => ⟨b, hR', IsGreenL.refl b⟩
+  | hL', ⟨.inl rfl, _⟩ | hL', ⟨_, .inl rfl⟩ => ⟨a, IsGreenR.refl a, hL'⟩
+  | ⟨.inr ⟨u, hu⟩, .inr ⟨v, hv⟩⟩, ⟨.inr ⟨x, hx⟩, .inr ⟨y, hy⟩⟩ =>
+    ⟨a * y,
+      ⟨.inr ⟨x, by simp [hu, ← hy, ← hx, mul_assoc]⟩, .inr ⟨y, rfl⟩⟩,
+      ⟨.inr ⟨u, by simp [hu, ← hy, mul_assoc]⟩, .inr ⟨v, by simp [← hv, hy, ← mul_assoc]⟩⟩⟩
 
 namespace IsGreenD
 
@@ -210,17 +197,14 @@ namespace IsGreenD
 @[refl] theorem refl (a : S) : IsGreenD a a := ⟨a, IsGreenL.refl a, IsGreenR.refl a⟩
 
 /-- Green's D relation is symmetric. -/
-@[symm] theorem symm {a b : S} (hab : IsGreenD a b) : IsGreenD b a :=
-  let ⟨_, hL1, hR1⟩ := hab
-  let ⟨y, hR2, hL2⟩ := isGreenL_commutes_isGreenR hL1 hR1
-  ⟨y, hL2.symm, hR2.symm⟩
+@[symm] theorem symm {a b : S} : IsGreenD a b → IsGreenD b a
+  | ⟨_, hL, hR⟩ => let ⟨y, hyR, hyL⟩ := isGreenL_commutes_isGreenR hL hR; ⟨y, hyL.symm, hyR.symm⟩
 
 /-- Green's D relation is transitive. -/
-@[trans] theorem trans {a b c : S} (hab : IsGreenD a b) (hbc : IsGreenD b c) : IsGreenD a c :=
-  let ⟨_, hL1, hR1⟩ := hab
-  let ⟨_, hL2, hR2⟩ := hbc
-  let ⟨z, hR3, hL3⟩ := isGreenL_commutes_isGreenR hL2.symm hR1.symm
-  ⟨z, hL1.trans hL3.symm, hR3.symm.trans hR2⟩
+@[trans] theorem trans {a b c : S} : IsGreenD a b → IsGreenD b c → IsGreenD a c
+  | ⟨_, hL1, hR1⟩, ⟨_, hL2, hR2⟩ =>
+    let ⟨z, hR3, hL3⟩ := isGreenL_commutes_isGreenR hL2.symm hR1.symm
+    ⟨z, hL1.trans hL3.symm, hR3.symm.trans hR2⟩
 
 /-- Green's D relation defines a setoid on `S`. -/
 protected def setoid (S : Type*) [Semigroup S] : Setoid S where
@@ -229,18 +213,14 @@ protected def setoid (S : Type*) [Semigroup S] : Setoid S where
 
 open MulOpposite in
 /-- Green's D relation is self-dual under the opposite semigroup. -/
-lemma isGreenD_iff_isGreenD_op {a b : S} :
-    IsGreenD a b ↔ IsGreenD (op a) (op b) :=
-  ⟨fun hab ↦
-    let ⟨_, hL1, hR1⟩ := hab
-    let ⟨y, hR2, hL2⟩ := isGreenL_commutes_isGreenR hL1 hR1
-    ⟨op y, isGreenR_iff_isGreenL_op.mp hR2, isGreenL_iff_isGreenR_op.mp hL2⟩,
-   fun hab_op ↦
-    let ⟨z, hL1, hR1⟩ := hab_op
-    let hR_unop : IsGreenR a (unop z) := isGreenR_iff_isGreenL_op.mpr hL1
-    let hL_unop : IsGreenL (unop z) b := isGreenL_iff_isGreenR_op.mpr hR1
-    let ⟨y, hR2, hL2⟩ := isGreenL_commutes_isGreenR hL_unop.symm hR_unop.symm
-    ⟨y, hL2.symm, hR2.symm⟩⟩
+lemma isGreenD_iff_isGreenD_op {a b : S} : IsGreenD a b ↔ IsGreenD (op a) (op b) :=
+  ⟨fun ⟨_, hL, hR⟩ ↦
+    let ⟨y, hyR, hyL⟩ := isGreenL_commutes_isGreenR hL hR
+    ⟨op y, isGreenR_iff_isGreenL_op.mp hyR, isGreenL_iff_isGreenR_op.mp hyL⟩,
+   fun ⟨_, hL, hR⟩ ↦
+    let ⟨y, hyR, hyL⟩ := isGreenL_commutes_isGreenR (isGreenL_iff_isGreenR_op.mpr hR).symm
+      (isGreenR_iff_isGreenL_op.mpr hL).symm
+    ⟨y, hyL.symm, hyR.symm⟩⟩
 
 end IsGreenD
 
